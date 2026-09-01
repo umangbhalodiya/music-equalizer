@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<title>YouTube-style UI — reference preview</title>
+<style>
+  /* Tokens (same values as assets/tokens.css, inlined so this file is self-contained) */
+  :root, [data-theme="dark"] {
+    --yt-bg:#0f0f0f; --yt-surface:#0f0f0f; --yt-surface-raised:#272727; --yt-surface-pressed:#3f3f3f;
+    --yt-text-primary:#f1f1f1; --yt-text-secondary:#aaaaaa; --yt-border:#2d2d2d;
+    --yt-accent:#ff0000; --yt-accent-hover:#cc0000; --yt-link:#3ea6ff;
+    --yt-chip-bg:#272727; --yt-chip-bg-active:#f1f1f1; --yt-chip-text-active:#0f0f0f;
+    --yt-icon:#f1f1f1; --yt-icon-muted:#aaaaaa; --yt-badge-bg:rgba(0,0,0,.8); --yt-shadow:0 2px 6px rgba(0,0,0,.4);
+  }
+  [data-theme="light"] {
+    --yt-bg:#ffffff; --yt-surface:#ffffff; --yt-surface-raised:#f2f2f2; --yt-surface-pressed:#e5e5e5;
+    --yt-text-primary:#0f0f0f; --yt-text-secondary:#606060; --yt-border:#e5e5e5;
+    --yt-accent:#ff0000; --yt-accent-hover:#cc0000; --yt-link:#065fd4;
+    --yt-chip-bg:#f2f2f2; --yt-chip-bg-active:#0f0f0f; --yt-chip-text-active:#ffffff;
+    --yt-icon:#0f0f0f; --yt-icon-muted:#606060; --yt-badge-bg:rgba(0,0,0,.8); --yt-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  :root {
+    --yt-font: Roboto, "Helvetica Neue", Arial, sans-serif;
+    --yt-radius-sm:4px; --yt-radius-md:8px; --yt-radius-lg:12px; --yt-radius-full:999px;
+    --yt-header-h:56px; --yt-sidebar-w:240px; --yt-sidebar-w-collapsed:72px; --yt-transition:150ms ease;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--yt-bg); color:var(--yt-text-primary); font-family:var(--yt-font); }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* Header */
+  .header {
+    position: fixed; top:0; left:0; right:0; height: var(--yt-header-h);
+    background: var(--yt-surface); border-bottom: 1px solid var(--yt-border);
+    display:flex; align-items:center; justify-content:space-between; padding: 0 16px; z-index: 100;
+  }
+  .header-left { display:flex; align-items:center; gap:16px; width: var(--yt-sidebar-w); }
+  .icon-btn { width:40px; height:40px; border-radius:var(--yt-radius-full); display:flex; align-items:center; justify-content:center; transition: background var(--yt-transition); }
+  .icon-btn:hover { background: var(--yt-surface-raised); }
+  .logo { font-weight:700; font-size:18px; display:flex; align-items:center; gap:6px; }
+  .logo .dot { color: var(--yt-accent); }
+  .header-center { flex:1; max-width:640px; display:flex; align-items:center; }
+  .search-input { flex:1; height:40px; padding:0 16px; border:1px solid var(--yt-border); border-radius: var(--yt-radius-full) 0 0 var(--yt-radius-full); background: var(--yt-surface); color: var(--yt-text-primary); font-size:14px; outline:none; }
+  .search-input::placeholder { color: var(--yt-text-secondary); }
+  .search-btn { width:64px; height:40px; background: var(--yt-surface-raised); border-radius: 0 var(--yt-radius-full) var(--yt-radius-full) 0; border-left:1px solid var(--yt-border); display:flex; align-items:center; justify-content:center; }
+  .mic-btn { width:40px; height:40px; border-radius: var(--yt-radius-full); background: var(--yt-surface-raised); display:flex; align-items:center; justify-content:center; margin-left:12px; }
+  .header-right { display:flex; align-items:center; gap:8px; }
+  .badge-wrap { position:relative; }
+  .badge { position:absolute; top:2px; right:2px; background:var(--yt-accent); color:#fff; font-size:10px; font-weight:600; border-radius:999px; min-width:16px; height:16px; display:flex; align-items:center; justify-content:center; padding:0 3px; }
+  .avatar { width:32px; height:32px; border-radius:50%; background: linear-gradient(135deg,#ff5f6d,#845ec2); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:#fff; }
+
+  /* Sidebar */
+  .sidebar { position:fixed; top: var(--yt-header-h); left:0; bottom:0; width: var(--yt-sidebar-w); overflow-y:auto; padding: 12px 0; transition: width var(--yt-transition); }
+  .sidebar.collapsed { width: var(--yt-sidebar-w-collapsed); }
+  .sidebar.collapsed .nav-label, .sidebar.collapsed .section-title { display:none; }
+  .sidebar.collapsed .nav-item { justify-content:center; }
+  .nav-item { display:flex; align-items:center; gap:24px; height:40px; padding: 0 24px; border-radius: var(--yt-radius-md); margin: 0 12px; font-size:14px; transition: background var(--yt-transition); }
+  .nav-item:hover { background: var(--yt-surface-raised); }
+  .nav-item.active { background: var(--yt-surface-raised); font-weight:500; }
+  .nav-icon { width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color: var(--yt-icon); }
+  .divider { height:1px; background: var(--yt-border); margin: 12px 12px; }
+  .section-title { font-size:12px; font-weight:500; color: var(--yt-text-secondary); text-transform:uppercase; letter-spacing:.04em; padding: 4px 24px; margin: 0 12px; }
+
+  /* Main */
+  .main { margin-left: var(--yt-sidebar-w); padding-top: calc(var(--yt-header-h) + 16px); transition: margin-left var(--yt-transition); }
+  .main.collapsed { margin-left: var(--yt-sidebar-w-collapsed); }
+
+  .chip-row { display:flex; gap:12px; padding: 0 24px 16px; overflow-x:auto; }
+  .chip { flex-shrink:0; height:32px; padding: 0 16px; border-radius: var(--yt-radius-full); background: var(--yt-chip-bg); font-size:14px; font-weight:500; display:flex; align-items:center; }
+  .chip.active { background: var(--yt-chip-bg-active); color: var(--yt-chip-text-active); }
+
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px 12px; padding: 0 24px 40px; }
+  .card { cursor:pointer; }
+  .thumb { position:relative; aspect-ratio: 16/9; border-radius: var(--yt-radius-lg); overflow:hidden; background: var(--yt-surface-raised); }
+  .thumb-fill { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .thumb-fill svg { width:36px; height:36px; opacity:.55; }
+  .duration { position:absolute; bottom:4px; right:4px; background: var(--yt-badge-bg); color:#fff; font-size:12px; font-weight:500; padding:1px 4px; border-radius: var(--yt-radius-sm); }
+  .card-body { display:flex; gap:12px; margin-top:8px; }
+  .card-avatar { width:36px; height:36px; border-radius:50%; flex-shrink:0; }
+  .card-title { font-size:14px; font-weight:500; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .card-meta { font-size:12px; color: var(--yt-text-secondary); margin-top:4px; }
+
+  .theme-toggle { position:fixed; bottom:16px; right:16px; z-index:200; height:36px; padding:0 16px; border-radius:var(--yt-radius-full); background:var(--yt-chip-bg); font-size:13px; font-weight:500; box-shadow: var(--yt-shadow); }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <button class="icon-btn" id="menuBtn" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <div class="logo"><span class="dot">▶</span> Streamly</div>
+  </div>
+  <div class="header-center">
+    <input class="search-input" type="text" placeholder="Search" />
+    <button class="search-btn" aria-label="Search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    </button>
+    <button class="mic-btn" aria-label="Search with voice">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3"/></svg>
+    </button>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" aria-label="Create">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="14" height="10" rx="2"/><path d="M17 10l4-2v8l-4-2z"/></svg>
+    </button>
+    <div class="badge-wrap">
+      <button class="icon-btn" aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1112 0c0 4 1.5 5 1.5 6.5H4.5C4.5 13 6 12 6 8z"/><path d="M9.5 17a2.5 2.5 0 005 0"/></svg>
+      </button>
+      <span class="badge">3</span>
+    </div>
+    <div class="avatar">S</div>
+  </div>
+</header>
+
+<nav class="sidebar" id="sidebar">
+  <div class="nav-item active">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></span>
+    <span class="nav-label">Home</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M10 9l5 3-5 3z"/></svg></span>
+    <span class="nav-label">Shorts</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 10l4 2.5L8 15z"/></svg></span>
+    <span class="nav-label">Subscriptions</span>
+  </div>
+  <div class="divider"></div>
+  <div class="section-title">You</div>
+  <div class="nav-item">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+    <span class="nav-label">History</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h16"/></svg></span>
+    <span class="nav-label">Playlists</span>
+  </div>
+  <div class="divider"></div>
+  <div class="section-title">Explore</div>
+  <div class="nav-item">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></span>
+    <span class="nav-label">Trending</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>
+    <span class="nav-label">Music</span>
+  </div>
+</nav>
+
+<main class="main" id="main">
+  <div class="chip-row">
+    <div class="chip active">All</div>
+    <div class="chip">Tutorials</div>
+    <div class="chip">Cooking</div>
+    <div class="chip">Design</div>
+    <div class="chip">Interviews</div>
+    <div class="chip">Live</div>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<button class="theme-toggle" id="themeToggle">Toggle light/dark</button>
+
+<script>
+  const items = [
+    ["Building a design system from scratch","Streamly Studio","128K views","2 days ago","#4c5c68"],
+    ["Weeknight pasta, four ways","Kitchen Diaries","54K views","1 week ago","#8a5a44"],
+    ["Inside the new office redesign","Workspace Co","301K views","3 hours ago","#3b6978"],
+    ["Full interview: building at scale","Founder Talks","19K views","5 days ago","#5d4b8a"],
+    ["Live: Q&A with the team","Streamly Studio","2.1K watching","Live now","#7a2e2e"],
+    ["Color theory in ten minutes","Design Basics","410K views","1 month ago","#2e5339"],
+    ["A calmer morning routine","Slow Living","88K views","4 days ago","#6b5b3e"],
+    ["What we shipped this quarter","Product Notes","33K views","6 days ago","#3e4a6b"],
+  ];
+  const grid = document.getElementById('grid');
+  grid.innerHTML = items.map(([title, channel, views, time, color]) => `
+    <div class="card">
+      <div class="thumb" style="background:${color}">
+        <div class="thumb-fill"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+        <span class="duration">${(Math.floor(Math.random()*15)+2)}:${String(Math.floor(Math.random()*59)).padStart(2,'0')}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-avatar" style="background:${color}"></div>
+        <div>
+          <div class="card-title">${title}</div>
+          <div class="card-meta">${channel}</div>
+          <div class="card-meta">${views} &middot; ${time}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    document.getElementById('main').classList.toggle('collapsed');
+  });
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const html = document.documentElement;
+    html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+/* YouTube-style design tokens — copy into any artifact's stylesheet.
+   Defaults to the dark theme; add data-theme="light" to <html> or <body>
+   (or drop the [data-theme="light"] block and just use --yt-* directly)
+   to switch. See references/design-system.md for how each token is used. */
+
+:root,
+[data-theme="dark"] {
+  --yt-bg: #0f0f0f;
+  --yt-surface: #0f0f0f;
+  --yt-surface-raised: #272727;
+  --yt-surface-pressed: #3f3f3f;
+  --yt-text-primary: #f1f1f1;
+  --yt-text-secondary: #aaaaaa;
+  --yt-border: #2d2d2d;
+  --yt-accent: #ff0000;
+  --yt-accent-hover: #cc0000;
+  --yt-link: #3ea6ff;
+  --yt-chip-bg: #272727;
+  --yt-chip-bg-active: #f1f1f1;
+  --yt-chip-text-active: #0f0f0f;
+  --yt-icon: #f1f1f1;
+  --yt-icon-muted: #aaaaaa;
+  --yt-badge-bg: rgba(0, 0, 0, 0.8);
+  --yt-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] {
+  --yt-bg: #ffffff;
+  --yt-surface: #ffffff;
+  --yt-surface-raised: #f2f2f2;
+  --yt-surface-pressed: #e5e5e5;
+  --yt-text-primary: #0f0f0f;
+  --yt-text-secondary: #606060;
+  --yt-border: #e5e5e5;
+  --yt-accent: #ff0000;
+  --yt-accent-hover: #cc0000;
+  --yt-link: #065fd4;
+  --yt-chip-bg: #f2f2f2;
+  --yt-chip-bg-active: #0f0f0f;
+  --yt-chip-text-active: #ffffff;
+  --yt-icon: #0f0f0f;
+  --yt-icon-muted: #606060;
+  --yt-badge-bg: rgba(0, 0, 0, 0.8);
+  --yt-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+:root {
+  /* Shared, theme-independent scale */
+  --yt-font: Roboto, "Helvetica Neue", Arial, sans-serif;
+  --yt-radius-sm: 4px;
+  --yt-radius-md: 8px;
+  --yt-radius-lg: 12px;
+  --yt-radius-full: 999px;
+  --yt-header-h: 56px;
+  --yt-sidebar-w: 240px;
+  --yt-sidebar-w-collapsed: 72px;
+  --yt-transition: 150ms ease;
+}
+
+body {
+  background: var(--yt-bg);
+  color: var(--yt-text-primary);
+  font-family: var(--yt-font);
+}
